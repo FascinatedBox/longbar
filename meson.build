@@ -1,4 +1,5 @@
-project('longbar',
+project(
+    'longbar',
     ['c'],
     version: '0.0.1',
     license: 'GPLv2',
@@ -15,6 +16,7 @@ add_project_arguments(
     ],
     language: 'c')
 
+gdbus_codegen = find_program('gdbus-codegen', required: true)
 gtk = dependency('gtk+-3.0', version: '>=3.22.0', required: true)
 gtk_layer_shell = dependency('gtk-layer-shell-0', version: '>=0.7.0', required: true)
 

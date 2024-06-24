@@ -1,12 +1,20 @@
+dbus_dir = include_directories('dbus')
+
 executable(
     'longbar',
     files(
+        'dbus/dbus-autogen.c',
+        'dbus/dbus-dispatch.c',
         'longbar.c',
-        'modules/clock-module.c',
         'main.c',
+        'modules/clock-module.c',
     ),
     dependencies: [
         gtk,
         gtk_layer_shell,
     ],
-    install: false)
+    include_directories: [
+        dbus_dir,
+    ],
+    install: false
+)

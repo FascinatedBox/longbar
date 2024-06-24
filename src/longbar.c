@@ -29,6 +29,7 @@ LongBar *longbar_new(GtkApplication *app) {
     gtk_layer_set_anchor(gtk_window, i, anchors[i]);
   }
 
+  result->app = app;
   result->window = gtk_window;
   return result;
 }
