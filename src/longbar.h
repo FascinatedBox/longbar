@@ -8,5 +8,6 @@ typedef struct LongBar_t {
 
 LongBar *longbar_new(GtkApplication *);
 void longbar_load_modules(LongBar *);
+void longbar_set_height(LongBar *, int);
 
 #endif

@@ -34,6 +34,19 @@ LongBar *longbar_new(GtkApplication *app) {
   return result;
 }
 
+void longbar_set_height(LongBar *longbar, int height) {
+  GtkWindow *w = longbar->window;
+
+  // GTK complains if it's zero.
+  if (height == 0)
+    height = 1;
+
+  // There's no call to set just the height, so set both. The width portion
+  // should be ignored, because he bar is anchored to the left and right edges.
+  gtk_widget_set_size_request(GTK_WIDGET(w), height, height);
+  gtk_window_resize(w, height, height);
+}
+
 void longbar_load_modules(LongBar *bar) {
   GtkWidget *layout_box = gtk_box_new(0, 0);
 

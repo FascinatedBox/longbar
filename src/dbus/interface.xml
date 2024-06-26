@@ -3,5 +3,9 @@
   <interface name="com.fascinatedbox.LongbarDispatch">
     <method name="quit">
     </method>
+    <method name="set_height">
+      <arg name="height" direction="in" type="u">
+      </arg>
+    </method>
   </interface>
 </node>

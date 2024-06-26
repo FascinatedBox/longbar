@@ -4,6 +4,18 @@
 #include "dbus-dispatch.h"
 #include "longbar.h"
 
+static gboolean on_handle_set_height(LongbarDispatch *skeleton,
+                                     GDBusMethodInvocation *invocation,
+                                     guint height, gpointer data) {
+  LongBar *longbar = (LongBar *)data;
+
+  (void)skeleton;
+  (void)invocation;
+
+  longbar_set_height(longbar, height);
+  return TRUE;
+}
+
 static gboolean on_handle_quit(LongbarDispatch *skeleton,
                                GDBusMethodInvocation *invocation,
                                gpointer data) {
@@ -21,6 +33,8 @@ static void on_name_acquired(GDBusConnection *connnection, const gchar *name,
   LongbarDispatch *skeleton = longbar_dispatch_skeleton_new();
   g_signal_connect(skeleton, "handle-quit", G_CALLBACK(on_handle_quit),
                    longbar);
+  g_signal_connect(skeleton, "handle-set-height",
+                   G_CALLBACK(on_handle_set_height), longbar);
   GError *error = NULL;
   g_dbus_interface_skeleton_export(
       G_DBUS_INTERFACE_SKELETON(skeleton), connnection,
