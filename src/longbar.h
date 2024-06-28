@@ -1,13 +1,13 @@
 #ifndef LONGBAR_H
 #define LONGBAR_H
 
-typedef struct LongBar_t {
+typedef struct Longbar_t {
   GtkWindow *window;
   GtkApplication *app;
-} LongBar;
+} Longbar;
 
-LongBar *longbar_new(GtkApplication *);
-void longbar_load_modules(LongBar *);
-void longbar_set_height(LongBar *, int);
+Longbar *longbar_new(GtkApplication *);
+void longbar_load_modules(Longbar *);
+void longbar_set_height(Longbar *, int);
 
 #endif

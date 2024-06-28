@@ -4,8 +4,8 @@
 #include "longbar.h"
 #include "modules/clock-module.h"
 
-LongBar *longbar_new(GtkApplication *app) {
-  LongBar *result = g_new(LongBar, 1);
+Longbar *longbar_new(GtkApplication *app) {
+  Longbar *result = g_new(Longbar, 1);
 
   GtkWindow *gtk_window = GTK_WINDOW(gtk_application_window_new(app));
 
@@ -34,7 +34,7 @@ LongBar *longbar_new(GtkApplication *app) {
   return result;
 }
 
-void longbar_set_height(LongBar *longbar, int height) {
+void longbar_set_height(Longbar *longbar, int height) {
   GtkWindow *w = longbar->window;
 
   // GTK complains if it's zero.
@@ -47,7 +47,7 @@ void longbar_set_height(LongBar *longbar, int height) {
   gtk_window_resize(w, height, height);
 }
 
-void longbar_load_modules(LongBar *bar) {
+void longbar_load_modules(Longbar *bar) {
   GtkWidget *layout_box = gtk_box_new(0, 0);
 
   clock_module_new(layout_box);

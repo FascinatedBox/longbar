@@ -6,7 +6,7 @@
 #include "longbar.h"
 
 static void activate(GtkApplication *app) {
-  LongBar *bar = longbar_new(app);
+  Longbar *bar = longbar_new(app);
 
   long_register_for_dbus(bar);
 

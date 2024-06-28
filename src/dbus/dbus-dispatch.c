@@ -7,7 +7,7 @@
 static gboolean on_handle_set_height(LongbarDispatch *skeleton,
                                      GDBusMethodInvocation *invocation,
                                      guint height, gpointer data) {
-  LongBar *longbar = (LongBar *)data;
+  Longbar *longbar = (Longbar *)data;
 
   (void)skeleton;
   (void)invocation;
@@ -19,7 +19,7 @@ static gboolean on_handle_set_height(LongbarDispatch *skeleton,
 static gboolean on_handle_quit(LongbarDispatch *skeleton,
                                GDBusMethodInvocation *invocation,
                                gpointer data) {
-  LongBar *longbar = (LongBar *)data;
+  Longbar *longbar = (Longbar *)data;
 
   (void)skeleton;
   (void)invocation;
@@ -44,7 +44,7 @@ static void on_name_acquired(GDBusConnection *connnection, const gchar *name,
   }
 }
 
-void long_register_for_dbus(struct LongBar_t *longbar) {
+void long_register_for_dbus(struct Longbar_t *longbar) {
   g_bus_own_name(G_BUS_TYPE_SESSION, "com.fascinatedbox.LongbarDispatch",
                  G_BUS_NAME_OWNER_FLAGS_NONE, NULL, on_name_acquired, NULL,
                  longbar, NULL);
