@@ -5,7 +5,7 @@ project(
     license: 'GPLv2',
     meson_version: '>=0.45.1',
     default_options: [
-        'c_std=gnu11',
+        'c_std=c2x',
         'warning_level=3'
     ])
 

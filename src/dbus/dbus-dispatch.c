@@ -4,32 +4,22 @@
 #include "dbus-dispatch.h"
 #include "longbar.h"
 
-static gboolean on_handle_set_height(LongbarDispatch *skeleton,
-                                     GDBusMethodInvocation *invocation,
+static gboolean on_handle_set_height(LongbarDispatch *, GDBusMethodInvocation *,
                                      guint height, gpointer data) {
   Longbar *longbar = (Longbar *)data;
-
-  (void)skeleton;
-  (void)invocation;
-
   longbar_set_height(longbar, height);
   return TRUE;
 }
 
-static gboolean on_handle_quit(LongbarDispatch *skeleton,
-                               GDBusMethodInvocation *invocation,
+static gboolean on_handle_quit(LongbarDispatch *, GDBusMethodInvocation *,
                                gpointer data) {
   Longbar *longbar = (Longbar *)data;
-
-  (void)skeleton;
-  (void)invocation;
   g_application_quit(G_APPLICATION(longbar->app));
   return TRUE;
 }
 
-static void on_name_acquired(GDBusConnection *connnection, const gchar *name,
+static void on_name_acquired(GDBusConnection *connnection, const gchar *,
                              gpointer longbar) {
-  (void)name;
   LongbarDispatch *skeleton = longbar_dispatch_skeleton_new();
   g_signal_connect(skeleton, "handle-quit", G_CALLBACK(on_handle_quit),
                    longbar);
