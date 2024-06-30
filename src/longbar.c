@@ -6,9 +6,7 @@
 
 Longbar *longbar_new(GtkApplication *app) {
   Longbar *result = g_new(Longbar, 1);
-
   GtkWindow *gtk_window = GTK_WINDOW(gtk_application_window_new(app));
-
   gtk_layer_init_for_window(gtk_window);
 
   // The bar goes below everything else.
@@ -49,9 +47,7 @@ void longbar_set_height(Longbar *longbar, int height) {
 
 void longbar_load_modules(Longbar *bar) {
   GtkWidget *layout_box = gtk_box_new(0, 0);
-
   clock_module_new(layout_box);
-
   gtk_container_add(GTK_CONTAINER(bar->window), layout_box);
   gtk_widget_show_all(GTK_WIDGET(bar->window));
 }

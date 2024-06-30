@@ -19,11 +19,8 @@ static void ensure_wayland_display(void) {
 
 static void activate(GtkApplication *app) {
   ensure_wayland_display();
-
   Longbar *bar = longbar_new(app);
-
   long_register_for_dbus(bar);
-
   longbar_load_modules(bar);
 }
 

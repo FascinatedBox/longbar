@@ -29,6 +29,7 @@ static void on_name_acquired(GDBusConnection *connnection, const gchar *,
   g_dbus_interface_skeleton_export(
       G_DBUS_INTERFACE_SKELETON(skeleton), connnection,
       "/com/fascinatedbox/LongbarDispatch", &error);
+
   if (error != NULL) {
     printf("longbar error: Unable to export skeleton: %s\n", error->message);
   }
