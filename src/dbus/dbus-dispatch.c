@@ -21,10 +21,6 @@ static gboolean on_handle_quit(LongbarDispatch *, GDBusMethodInvocation *,
 static void on_name_acquired(GDBusConnection *connnection, const gchar *,
                              gpointer longbar) {
   LongbarDispatch *skeleton = longbar_dispatch_skeleton_new();
-  g_signal_connect(skeleton, "handle-quit", G_CALLBACK(on_handle_quit),
-                   longbar);
-  g_signal_connect(skeleton, "handle-set-height",
-                   G_CALLBACK(on_handle_set_height), longbar);
   GError *error = NULL;
   g_dbus_interface_skeleton_export(
       G_DBUS_INTERFACE_SKELETON(skeleton), connnection,
@@ -32,7 +28,13 @@ static void on_name_acquired(GDBusConnection *connnection, const gchar *,
 
   if (error != NULL) {
     printf("longbar error: Unable to export skeleton: %s\n", error->message);
+    return;
   }
+
+  g_signal_connect(skeleton, "handle-set-height",
+                   G_CALLBACK(on_handle_set_height), longbar);
+  g_signal_connect(skeleton, "handle-quit", G_CALLBACK(on_handle_quit),
+                   longbar);
 }
 
 void long_register_for_dbus(struct Longbar_t *longbar) {
