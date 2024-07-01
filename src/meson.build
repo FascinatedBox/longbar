@@ -1,20 +1,18 @@
-dbus_dir = include_directories('dbus')
+src_dir = include_directories('.')
+
+subdir('dbus')
 
 executable(
     'longbar',
     files(
-        'dbus/dbus-autogen.c',
-        'dbus/dbus-dispatch.c',
         'longbar.c',
         'main.c',
         'modules/clock-module.c',
     ),
     dependencies: [
+        dep_dbus,
         gtk,
         gtk_layer_shell,
-    ],
-    include_directories: [
-        dbus_dir,
     ],
     install: false
 )

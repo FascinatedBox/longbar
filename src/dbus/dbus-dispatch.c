@@ -1,7 +1,7 @@
 #include <gtk/gtk.h>
 
-#include "dbus-autogen.h"
 #include "dbus-dispatch.h"
+#include "dbus-interface.h"
 #include "longbar.h"
 
 static gboolean on_handle_set_height(LongbarDispatch *, GDBusMethodInvocation *,

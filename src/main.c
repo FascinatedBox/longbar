@@ -3,7 +3,7 @@
 #include <gtk/gtk.h>
 #include <stdio.h>
 
-#include "dbus-dispatch.h"
+#include "dbus/dbus-dispatch.h"
 #include "longbar.h"
 
 static void ensure_wayland_display(void) {
