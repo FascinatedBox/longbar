@@ -3,6 +3,7 @@
 
 #include "longbar.h"
 #include "modules/clock-module.h"
+#include "modules/taskbar-module.h"
 
 Longbar *longbar_new(GtkApplication *app) {
   Longbar *result = g_new(Longbar, 1);
@@ -48,6 +49,7 @@ void longbar_set_height(Longbar *longbar, int height) {
 void longbar_load_modules(Longbar *bar) {
   GtkWidget *layout_box = gtk_box_new(0, 0);
   clock_module_new(layout_box);
+  taskbar_module_new(layout_box);
   gtk_container_add(GTK_CONTAINER(bar->window), layout_box);
   gtk_widget_show_all(GTK_WIDGET(bar->window));
 }

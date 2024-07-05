@@ -18,5 +18,6 @@ add_project_arguments(
 
 gtk = dependency('gtk+-3.0', version: '>=3.22.0', required: true)
 gtk_layer_shell = dependency('gtk-layer-shell-0', version: '>=0.7.0', required: true)
+wayland_client = dependency('wayland-client', version: '>=1.10.0', required: true)
 
 subdir('src')
