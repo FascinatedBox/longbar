@@ -37,7 +37,7 @@ lib_longbar_dbus = static_library(
     ],
 )
 
-dep_dbus = declare_dependency(
+dbus_dep = declare_dependency(
     link_with: lib_longbar_dbus,
     sources: dbus_protos_src,
 )

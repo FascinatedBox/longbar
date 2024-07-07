@@ -40,7 +40,7 @@ lib_longbar_protocol = static_library(
     ],
 )
 
-dep_protocol = declare_dependency(
+protocol_dep = declare_dependency(
     link_with: lib_longbar_protocol,
     sources: client_protos_headers,
 )

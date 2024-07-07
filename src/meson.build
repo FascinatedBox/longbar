@@ -14,10 +14,10 @@ executable(
         'wayland-event-source.c',
     ),
     dependencies: [
-        dep_dbus,
-        dep_protocol,
+        dbus_dep,
         gtk,
         gtk_layer_shell,
+        protocol_dep,
         wayland_client,
     ],
     include_directories: [
