@@ -5,7 +5,7 @@ struct zwlr_foreign_toplevel_manager_v1;
 
 typedef struct {
   GtkWidget *grid;
-  struct zwlr_foreign_toplevel_manager_v1 *manager;
+  struct zbox_foreign_toplevel_manager_v1 *manager;
   struct wl_seat *seat;
 } taskbar_module_data;
 

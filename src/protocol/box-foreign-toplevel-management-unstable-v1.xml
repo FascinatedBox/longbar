@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<protocol name="wlr_foreign_toplevel_management_unstable_v1">
+<protocol name="box_foreign_toplevel_management_unstable_v1">
   <copyright>
     Copyright © 2018 Ilia Bozhinov
 
@@ -25,14 +25,18 @@
     THIS SOFTWARE.
   </copyright>
 
-  <interface name="zwlr_foreign_toplevel_manager_v1" version="3">
+  <interface name="zbox_foreign_toplevel_manager_v1" version="10">
     <description summary="list and control opened apps">
-      The purpose of this protocol is to enable the creation of taskbars
-      and docks by providing them with a list of opened applications and
-      letting them request certain actions on them, like maximizing, etc.
+      This protocol is a superset of the foreign toplevel manager protocol in
+      wlroots. That protocol's purpose is enabling the creation of taskbars and
+      docks by providing handles to applications and allowing certain requests
+      (like resizing).
 
-      After a client binds the zwlr_foreign_toplevel_manager_v1, each opened
-      toplevel window will be sent via the toplevel event
+      After a client binds the zbox_foreign_toplevel_manager_v1, each opened
+      toplevel window will be sent via the toplevel event.
+
+      This protocol extends the above by allowing more control over the
+      compositor.
     </description>
 
     <event name="toplevel">
@@ -43,9 +47,9 @@
 
         All initial details of the toplevel(title, app_id, states, etc.) will
         be sent immediately after this event via the corresponding events in
-        zwlr_foreign_toplevel_handle_v1.
+        zbox_foreign_toplevel_handle_v1.
       </description>
-      <arg name="toplevel" type="new_id" interface="zwlr_foreign_toplevel_handle_v1"/>
+      <arg name="toplevel" type="new_id" interface="zbox_foreign_toplevel_handle_v1"/>
     </event>
 
     <request name="stop">
@@ -61,16 +65,16 @@
     <event name="finished">
       <description summary="the compositor has finished with the toplevel manager">
         This event indicates that the compositor is done sending events to the
-        zwlr_foreign_toplevel_manager_v1. The server will destroy the object
+        zbox_foreign_toplevel_manager_v1. The server will destroy the object
         immediately after sending this request, so it will become invalid and
         the client should free any resources associated with it.
       </description>
     </event>
   </interface>
 
-  <interface name="zwlr_foreign_toplevel_handle_v1" version="3">
+  <interface name="zbox_foreign_toplevel_handle_v1" version="10">
     <description summary="an opened toplevel">
-      A zwlr_foreign_toplevel_handle_v1 object represents an opened toplevel
+      A zbox_foreign_toplevel_handle_v1 object represents an opened toplevel
       window. Each app may have multiple opened toplevels.
 
       Each toplevel has a list of outputs it is visible on, conveyed to the
@@ -171,7 +175,7 @@
         This event is sent after all changes in the toplevel state have been
         sent.
 
-        This allows changes to the zwlr_foreign_toplevel_handle_v1 properties
+        This allows changes to the zbox_foreign_toplevel_handle_v1 properties
         to be seen as atomic, even if they happen via multiple events.
       </description>
     </event>
@@ -182,7 +186,7 @@
         typically use a shell-specific method to carry out this request, for
         example by sending the xdg_toplevel.close event. However, this gives
         no guarantees the toplevel will actually be destroyed. If and when
-        this happens, the zwlr_foreign_toplevel_handle_v1.closed event will
+        this happens, the zbox_foreign_toplevel_handle_v1.closed event will
         be emitted.
       </description>
     </request>
@@ -212,20 +216,22 @@
     <enum name="error">
       <entry name="invalid_rectangle" value="0"
         summary="the provided rectangle is invalid"/>
+      <entry name="invalid_move" value="1"
+        summary="absolute move with negative coordinates" since="3"/>
     </enum>
 
     <event name="closed">
       <description summary="this toplevel has been destroyed">
         This event means the toplevel has been destroyed. It is guaranteed there
-        won't be any more events for this zwlr_foreign_toplevel_handle_v1. The
+        won't be any more events for this zbox_foreign_toplevel_handle_v1. The
         toplevel itself becomes inert so any requests will be ignored except the
         destroy request.
       </description>
     </event>
 
     <request name="destroy" type="destructor">
-      <description summary="destroy the zwlr_foreign_toplevel_handle_v1 object">
-        Destroys the zwlr_foreign_toplevel_handle_v1 object.
+      <description summary="destroy the zbox_foreign_toplevel_handle_v1 object">
+        Destroys the zbox_foreign_toplevel_handle_v1 object.
 
         This request should be called either when the client does not want to
         use the toplevel anymore or after the closed event to finalize the
@@ -264,7 +270,29 @@
 
         No event is emitted when the parent handle is destroyed by the client.
       </description>
-      <arg name="parent" type="object" interface="zwlr_foreign_toplevel_handle_v1" allow-null="true"/>
+      <arg name="parent" type="object" interface="zbox_foreign_toplevel_handle_v1" allow-null="true"/>
     </event>
+
+    <!-- Box's additions -->
+
+    <request name="move" since="10">
+      <description summary="move a toplevel to given coordinates">
+        Request a move of the associated toplevel. The move is done as an
+        absolute move (not relative) in the compositor's global space.
+
+        When moving a window, the decorations are always included in the
+        geometry, regardless of their origin (client or server). A move of (0,
+        0) will place the top left corner of the toplevel at the top left corner
+        of the screen.
+
+        If the toplevel is either maximized, fullscreen, or minimized, the
+        request will be ignored.
+
+        It is an error for either coordinate to be negative, even if the
+        request will be ignored.
+      </description>
+      <arg name="x" type="int"/>
+      <arg name="y" type="int"/>
+    </request>
   </interface>
 </protocol>

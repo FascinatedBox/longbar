@@ -21,7 +21,7 @@ wayland_scanner_client = generator(
 )
 
 client_protocols = [
-    'wlr-foreign-toplevel-management-unstable-v1.xml',
+    'box-foreign-toplevel-management-unstable-v1.xml',
 ]
 
 client_protos_src = []

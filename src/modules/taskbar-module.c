@@ -4,12 +4,12 @@
 #include "longbar.h"
 #include "taskbar-module.h"
 #include "wayland-event-source.h"
-#include "wlr-foreign-toplevel-management-unstable-v1-protocol.h"
+#include "box-foreign-toplevel-management-unstable-v1-protocol.h"
 
-#define WLR_FOREIGN_TOPLEVEL_MANAGEMENT_VERSION 3
+#define BOX_FOREIGN_TOPLEVEL_MANAGEMENT_VERSION 10
 
 typedef struct {
-  struct zwlr_foreign_toplevel_handle_v1 *zwlr_handle;
+  struct zbox_foreign_toplevel_handle_v1 *zbox_handle;
   taskbar_module_data *module_data;
   GtkWidget *button;
   GtkWidget *menu;
@@ -18,24 +18,24 @@ typedef struct {
   int pending_sync;
 } toplevel_data;
 
-static void nop_app_id(void *, struct zwlr_foreign_toplevel_handle_v1 *,
+static void nop_app_id(void *, struct zbox_foreign_toplevel_handle_v1 *,
                        const char *) {}
 
-static void nop_output(void *, struct zwlr_foreign_toplevel_handle_v1 *,
+static void nop_output(void *, struct zbox_foreign_toplevel_handle_v1 *,
                        struct wl_output *) {}
 
-static void nop_parent(void *, struct zwlr_foreign_toplevel_handle_v1 *,
-                       struct zwlr_foreign_toplevel_handle_v1 *) {}
+static void nop_parent(void *, struct zbox_foreign_toplevel_handle_v1 *,
+                       struct zbox_foreign_toplevel_handle_v1 *) {}
 
 static void toplevel_handle_title(void *data,
-                                  struct zwlr_foreign_toplevel_handle_v1 *,
+                                  struct zbox_foreign_toplevel_handle_v1 *,
                                   const char *title) {
   toplevel_data *toplevel = data;
   gtk_button_set_label(GTK_BUTTON(toplevel->button), title);
 }
 
 static void toplevel_handle_state(void *data,
-                                  struct zwlr_foreign_toplevel_handle_v1 *,
+                                  struct zbox_foreign_toplevel_handle_v1 *,
                                   struct wl_array *array) {
   toplevel_data *toplevel = data;
   int active = FALSE;
@@ -43,7 +43,7 @@ static void toplevel_handle_state(void *data,
 
   wl_array_for_each(entry, array) {
     // This is the only state that needs to be tracked.
-    if (*entry == ZWLR_FOREIGN_TOPLEVEL_HANDLE_V1_STATE_ACTIVATED)
+    if (*entry == ZBOX_FOREIGN_TOPLEVEL_HANDLE_V1_STATE_ACTIVATED)
       active = TRUE;
   }
 
@@ -52,7 +52,7 @@ static void toplevel_handle_state(void *data,
 }
 
 static void toplevel_handle_done(void *data,
-                                 struct zwlr_foreign_toplevel_handle_v1 *) {
+                                 struct zbox_foreign_toplevel_handle_v1 *) {
   toplevel_data *toplevel = data;
   taskbar_module_data *tmd = toplevel->module_data;
   GtkWidget *grid = tmd->grid;
@@ -72,7 +72,7 @@ static void toplevel_handle_done(void *data,
 
 static void
 toplevel_handle_closed(void *data,
-                       struct zwlr_foreign_toplevel_handle_v1 *zwlr_handle) {
+                       struct zbox_foreign_toplevel_handle_v1 *zbox_handle) {
   toplevel_data *toplevel = data;
 
   if (toplevel->visible) {
@@ -81,12 +81,12 @@ toplevel_handle_closed(void *data,
     gtk_container_remove(GTK_CONTAINER(grid), toplevel->button);
   }
 
-  zwlr_foreign_toplevel_handle_v1_destroy(zwlr_handle);
+  zbox_foreign_toplevel_handle_v1_destroy(zbox_handle);
   free(toplevel);
 }
 
 static void on_menu_close(toplevel_data *toplevel) {
-  zwlr_foreign_toplevel_handle_v1_close(toplevel->zwlr_handle);
+  zbox_foreign_toplevel_handle_v1_close(toplevel->zbox_handle);
 }
 
 static gint on_toplevel_button_press(toplevel_data *toplevel, GdkEvent *event) {
@@ -97,13 +97,13 @@ static gint on_toplevel_button_press(toplevel_data *toplevel, GdkEvent *event) {
 
   if (event_button->button == GDK_BUTTON_PRIMARY) {
     if (toplevel->active)
-      zwlr_foreign_toplevel_handle_v1_set_minimized(toplevel->zwlr_handle);
+      zbox_foreign_toplevel_handle_v1_set_minimized(toplevel->zbox_handle);
     else {
       struct wl_seat *seat = toplevel->module_data->seat;
 
       // Make sure the window isn't minimized before trying to activate it.
-      zwlr_foreign_toplevel_handle_v1_unset_minimized(toplevel->zwlr_handle);
-      zwlr_foreign_toplevel_handle_v1_activate(toplevel->zwlr_handle, seat);
+      zbox_foreign_toplevel_handle_v1_unset_minimized(toplevel->zbox_handle);
+      zbox_foreign_toplevel_handle_v1_activate(toplevel->zbox_handle, seat);
     }
   } else if (event_button->button == GDK_BUTTON_SECONDARY) {
     GtkMenu *menu = GTK_MENU(toplevel->menu);
@@ -126,7 +126,7 @@ static void create_menu_for_toplevel(toplevel_data *toplevel) {
   toplevel->menu = menu;
 }
 
-static const struct zwlr_foreign_toplevel_handle_v1_listener toplevel_impl = {
+static const struct zbox_foreign_toplevel_handle_v1_listener toplevel_impl = {
     .app_id = nop_app_id,
     .closed = toplevel_handle_closed,
     .done = toplevel_handle_done,
@@ -137,26 +137,26 @@ static const struct zwlr_foreign_toplevel_handle_v1_listener toplevel_impl = {
     .title = toplevel_handle_title};
 
 static void toplevel_manager_handle_toplevel(
-    void *data_, struct zwlr_foreign_toplevel_manager_v1 *,
-    struct zwlr_foreign_toplevel_handle_v1 *zwlr_handle) {
+    void *data_, struct zbox_foreign_toplevel_manager_v1 *,
+    struct zbox_foreign_toplevel_handle_v1 *zbox_handle) {
   taskbar_module_data *data = data_;
   toplevel_data *toplevel = g_new0(toplevel_data, 1);
-  toplevel->zwlr_handle = zwlr_handle;
+  toplevel->zbox_handle = zbox_handle;
   toplevel->module_data = data;
   toplevel->button = gtk_toggle_button_new();
   toplevel->visible = FALSE;
   gtk_button_set_relief(GTK_BUTTON(toplevel->button), GTK_RELIEF_NONE);
   create_menu_for_toplevel(toplevel);
-  zwlr_foreign_toplevel_handle_v1_add_listener(zwlr_handle, &toplevel_impl,
+  zbox_foreign_toplevel_handle_v1_add_listener(zbox_handle, &toplevel_impl,
                                                toplevel);
 }
 
 static void toplevel_manager_handle_finished(
-    void *, struct zwlr_foreign_toplevel_manager_v1 *toplevel_manager) {
-  zwlr_foreign_toplevel_manager_v1_destroy(toplevel_manager);
+    void *, struct zbox_foreign_toplevel_manager_v1 *toplevel_manager) {
+  zbox_foreign_toplevel_manager_v1_destroy(toplevel_manager);
 }
 
-static const struct zwlr_foreign_toplevel_manager_v1_listener
+static const struct zbox_foreign_toplevel_manager_v1_listener
     toplevel_manager_impl = {
         .finished = toplevel_manager_handle_finished,
         .toplevel = toplevel_manager_handle_toplevel,
@@ -166,11 +166,11 @@ static void handle_global(void *data_, struct wl_registry *registry,
                           uint32_t name, const char *interface,
                           uint32_t version) {
   taskbar_module_data *data = data_;
-  if (strcmp(interface, zwlr_foreign_toplevel_manager_v1_interface.name) == 0) {
+  if (strcmp(interface, zbox_foreign_toplevel_manager_v1_interface.name) == 0) {
     data->manager = wl_registry_bind(
-        registry, name, &zwlr_foreign_toplevel_manager_v1_interface,
-        WLR_FOREIGN_TOPLEVEL_MANAGEMENT_VERSION);
-    zwlr_foreign_toplevel_manager_v1_add_listener(data->manager,
+        registry, name, &zbox_foreign_toplevel_manager_v1_interface,
+        BOX_FOREIGN_TOPLEVEL_MANAGEMENT_VERSION);
+    zbox_foreign_toplevel_manager_v1_add_listener(data->manager,
                                                   &toplevel_manager_impl, data);
   } else if (strcmp(interface, wl_seat_interface.name) == 0 &&
              data->seat == NULL) {
